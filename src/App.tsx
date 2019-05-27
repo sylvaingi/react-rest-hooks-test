@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy } from "react";
+import { RestProvider, NetworkErrorBoundary } from "rest-hooks";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+
+const HomePage = lazy(() =>
+  import(/* webpackChunkName: "home" */ "./home/HomePage")
+);
+const DetailsPage = lazy(() =>
+  import(/* webpackChunkName: "details" */ "./details/DetailsPage")
+);
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RestProvider>
+      <BrowserRouter>
+        <Suspense fallback="Loading...">
+          <NetworkErrorBoundary>
+            <Switch>
+              <Route path="/" exact component={HomePage} />
+              <Route path="/:id" exact component={DetailsPage} />
+            </Switch>
+          </NetworkErrorBoundary>
+        </Suspense>
+      </BrowserRouter>
+    </RestProvider>
   );
-}
+};
 
 export default App;
