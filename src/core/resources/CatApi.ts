@@ -15,6 +15,13 @@ export abstract class CatApiRessource extends Resource {
   static fetchPlugin = (request: SuperAgentRequest) =>
     request.set("x-api-key", API_KEY);
 
+  static getRequestOptions() {
+    return {
+      ...super.getRequestOptions(),
+      dataExpiryLength: 60 * 60 * 1000 // one hour
+    };
+  }
+
   pk() {
     return this.id;
   }

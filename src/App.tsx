@@ -1,28 +1,22 @@
-import React, { Suspense, lazy } from "react";
-import { RestProvider, NetworkErrorBoundary } from "rest-hooks";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import React, { Suspense } from "react";
+import { NetworkErrorBoundary, ExternalCacheProvider } from "rest-hooks";
+import { BrowserRouter } from "react-router-dom";
+import { createReduxCache, selector } from "core/resources/cache/redux";
+import Routes from "Routes";
 
-const HomePage = lazy(() =>
-  import(/* webpackChunkName: "home" */ "./home/HomePage")
-);
-const DetailsPage = lazy(() =>
-  import(/* webpackChunkName: "details" */ "./details/DetailsPage")
-);
+const reduxCache = createReduxCache();
 
 const App: React.FC = () => {
   return (
-    <RestProvider>
+    <ExternalCacheProvider store={reduxCache} selector={selector}>
       <BrowserRouter>
         <Suspense fallback="Loading...">
           <NetworkErrorBoundary>
-            <Switch>
-              <Route path="/" exact component={HomePage} />
-              <Route path="/:id" exact component={DetailsPage} />
-            </Switch>
+            <Routes />
           </NetworkErrorBoundary>
         </Suspense>
       </BrowserRouter>
-    </RestProvider>
+    </ExternalCacheProvider>
   );
 };
 
