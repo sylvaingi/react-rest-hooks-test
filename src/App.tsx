@@ -1,14 +1,18 @@
 import React, { Suspense } from "react";
-import { NetworkErrorBoundary, ExternalCacheProvider } from "rest-hooks";
+import { NetworkErrorBoundary } from "rest-hooks";
 import { BrowserRouter } from "react-router-dom";
-import { createReduxCache, selector } from "core/resources/cache/redux";
 import Routes from "Routes";
+import { ImageResource, BreedResource } from "core/resources/CatApi";
+import CachingRestProvider from "core/lib/CachingRestProvider";
+import LocalStorageCache from "core/lib/LocalStorageCache";
 
-const reduxCache = createReduxCache();
+const cache = new LocalStorageCache({
+  resources: [ImageResource, BreedResource]
+});
 
 const App: React.FC = () => {
   return (
-    <ExternalCacheProvider store={reduxCache} selector={selector}>
+    <CachingRestProvider cache={cache}>
       <BrowserRouter>
         <Suspense fallback="Loading...">
           <NetworkErrorBoundary>
@@ -16,7 +20,7 @@ const App: React.FC = () => {
           </NetworkErrorBoundary>
         </Suspense>
       </BrowserRouter>
-    </ExternalCacheProvider>
+    </CachingRestProvider>
   );
 };
 
