@@ -18,7 +18,8 @@ export abstract class CatApiRessource extends Resource {
   static getRequestOptions() {
     return {
       ...super.getRequestOptions(),
-      dataExpiryLength: 60 * 60 * 1000 // one hour
+      dataExpiryLength: 60 * 60 * 1000, // one hour
+      pollFrequency: 5000 // every 5 seconds
     };
   }
 
