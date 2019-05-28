@@ -1,24 +1,21 @@
-import React, { useState, useCallback } from "react";
+import React, { useMemo } from "react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
-import { useResource, useSubscription } from "rest-hooks";
+import { useResource } from "rest-hooks";
 import { BreedResource } from "core/resources/CatApi";
 
 const breedListRequest = BreedResource.listRequest();
 
 export interface Props extends RouteComponentProps {}
 
-const HomePage: React.FC<Props> = () => {
-  const [page, setPage] = useState(0);
-  const handleNext = useCallback(
-    () => {
-      setPage(page + 1)
-    },
-    [page],
-  );
+const HomePage: React.FC<Props> = ({ location }) => {
+  const query = useMemo(() => new URLSearchParams(location.search.slice(1)), [
+    location.search
+  ]);
+
+  const page = query.has("page") ? parseInt(query.get("page")!, 10) : 0;
 
   const breeds = useResource(breedListRequest, { page, limit: 5 });
-  useSubscription(breedListRequest, { page, limit: 5 });
 
   return (
     <>
@@ -29,7 +26,8 @@ const HomePage: React.FC<Props> = () => {
           </li>
         ))}
       </ul>
-      <button onClick={handleNext}>Next</button>
+      <Link to={`${location.pathname}?page=${page - 1}`}>Prev</Link>
+      <Link to={`${location.pathname}?page=${page + 1}`}>Next</Link>
     </>
   );
 };
